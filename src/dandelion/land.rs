@@ -1,5 +1,6 @@
-use crate::dandelion::*;
 use rand_distr::{Normal,Distribution};
+
+use super::dandelion::Dandelion;
 pub struct Land {
   pub day: u32, //change the season based off this
   pub temperature: f32,

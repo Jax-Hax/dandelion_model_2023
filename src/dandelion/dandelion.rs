@@ -1,5 +1,6 @@
-use crate::land::*;
 use rand::prelude::*;
+
+use super::land::Land;
 
 const NUM_SEEDS_LEFT: u32 = 250;
 #[derive(Clone, Copy, Debug)]
