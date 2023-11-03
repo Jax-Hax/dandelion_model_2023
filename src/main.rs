@@ -1,9 +1,8 @@
 use glam::{Vec2, Vec3};
-use rand_distr::Normal;
 use tile_based_game::{assets::AssetServer, prelude::*, primitives::rect};
 
 use crate::dandelion::{dandelion::Dandelion, land::Land};
-const NUM_DAYS: u32 = 98;
+const NUM_DAYS: u32 = 96;
 const ZOOM_OUT: f32 = 20.;
 mod dandelion {
     pub mod dandelion;
@@ -22,18 +21,7 @@ pub async fn run() {
     //custom mesh
     let mut asset_server = state.world.get_resource_mut::<AssetServer>().unwrap();
     let dandelion_idx = asset_server.compile_material("cube-diffuse.jpg").await;
-    let mut land = Land {
-        day: 0,
-        wind_speed: 0.0,
-        temperature: 0.0,
-        humidity: 0.0,
-        rainfall: 0.0,
-        soil_moisture: 0.0,
-        max_num_dandelions: 1000,
-        normal: Normal::new(2.0, 10. / 3.).unwrap(), //mean, standard deviation
-        rng: rand::thread_rng(),
-        base_aridness: 0.3,
-    };
+    let mut land = Land::new(0.0,0.0,0.0,0.3);
     let mut dandelions = vec![];
     dandelions.push(Dandelion::new(50., 0.));
     for day in 0..NUM_DAYS {
@@ -63,6 +51,19 @@ pub async fn run() {
         vertices,
         indices,
         instances2.iter_mut().map(|instance| instance).collect(),
+        dandelion_idx,
+        false,
+    );
+
+
+    //100x100 final grid
+    let p1 = Vec2::new(0., 0.);
+    let p2 = Vec2::new(100. / ZOOM_OUT,100. / ZOOM_OUT);
+    let (vertices, indices) = rect(p1, p2);
+    asset_server.build_mesh(
+        vertices,
+        indices,
+        vec![&mut Instance {position: Vec3::new(0.,0.,0.), ..Default::default()}],
         dandelion_idx,
         false,
     );
