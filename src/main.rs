@@ -3,7 +3,7 @@ use tile_based_game::{assets::AssetServer, prelude::*, primitives::rect};
 
 use crate::dandelion::{dandelion::Dandelion, land::Land};
 const NUM_DAYS: u32 = 365;
-const ZOOM_OUT: f32 = 20.;
+const ZOOM_OUT: f32 = 80.;
 const DANDELIONS_PER_METER: u32 = 9;
 mod dandelion {
     pub mod dandelion;
@@ -18,11 +18,12 @@ pub async fn run() {
     let camera = Camera::new(Vec3::new(0.0, 0.0, 0.0));
     // State::new uses async code, so we're going to wait for it to finish
     let (mut state, event_loop) = State::new(false, env!("OUT_DIR"), camera, 5.0, 2.0).await;
+    let window_events = state.world.get_resource::<WindowEvents>().unwrap().aspect_ratio;
     //add models
     //custom mesh
     let mut asset_server = state.world.get_resource_mut::<AssetServer>().unwrap();
     let dandelion_idx = asset_server.compile_material("cube-diffuse.jpg").await;
-    let mut land = Land::new(1.0,1.0,0.001);
+    let mut land = Land::new(1.0,1.0,0.01);
     let mut dandelions = vec![];
     dandelions.push(Dandelion::new(0.,50.));
     for day in 0..NUM_DAYS {
@@ -44,8 +45,8 @@ pub async fn run() {
     let mut instances2: Vec<Instance> = dandelions
         .iter_mut()
         .map(|dandelion| Instance {
-            position: Vec3::new(dandelion.x / ZOOM_OUT, dandelion.y / ZOOM_OUT, 0.),
-            enabled: (dandelion.x > 0. && dandelion.x <= 100. && dandelion.y > 0. && dandelion.y <= 100.),
+            position: Vec3::new(dandelion.x / ZOOM_OUT, (dandelion.y / ZOOM_OUT) * window_events, 0.),
+            //enabled: (dandelion.x > 0. && dandelion.x <= 100. && dandelion.y > 0. && dandelion.y <= 100.),
             ..Default::default()
         })
         .collect();
@@ -76,7 +77,7 @@ fn add_dandelions(dandelions_to_add: Vec<Dandelion>, dandelion_list: &mut Vec<Da
         if dandelion.x > -99. && dandelion.x < 99. && dandelion.y > -99. && dandelion.y < 99. {
             let x = (dandelion.x + 100.).round() as usize;
             let y = (dandelion.y + 100.).round() as usize;
-            if land.dandelions_per_meter[x][y] < DANDELIONS_PER_METER {
+            if land.dandelions_per_meter[x][y] <= DANDELIONS_PER_METER {
                 land.dandelions_per_meter[x][y] += 1;
                 dandelion_list.push(dandelion);
             } //otherwise it dies

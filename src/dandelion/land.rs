@@ -22,7 +22,7 @@ impl Land {
             normal: Normal::new(2.0, 10. / 3.).unwrap(), //mean, standard deviation
             rng: rand::thread_rng(),
             base_aridness: aridness_constant,
-            small_chance_normal_dist: Normal::new(50.0, 150. / 3.).unwrap(), //mean, standard deviation
+            small_chance_normal_dist: Normal::new(75.0, 150. / 3.).unwrap(), //mean, standard deviation
             one_in_this_num: 200, //0.05% chance
             dandelions_per_meter: [[0; 200]; 200]
         }
@@ -30,6 +30,7 @@ impl Land {
     pub fn tick(&mut self, land: &mut Vec<Dandelion>) -> Vec<Dandelion> {
         let mut new_dandelions = vec![];
         let am_to_spawn = self.calclulate_am_to_spawn_value(land.len());
+        println!("Am to spawn: {}", am_to_spawn);
         self.calculate_normal_dist();
         for dandelion in land {
             let mut dandelions = dandelion.tick(self, am_to_spawn);
@@ -41,6 +42,9 @@ impl Land {
     fn calculate_aridness(&self, num_dandelions: usize, temp: f32) -> f32 {
         let top = self.base_aridness * num_dandelions as f32;
         let aridness = top/(temp*self.humidity);
+        if aridness < 1. {
+            return 1.
+        }
         aridness
     }
     fn calculate_normal_dist(&mut self) {
@@ -49,19 +53,19 @@ impl Land {
     fn calclulate_am_to_spawn_value(&self, num_dandelions: usize) -> usize {
         let temp = self.temperature();
         let top = 25. * self.humidity * self.wind_speed * temp;
-        let bottom = top / (3. * self.calculate_aridness(num_dandelions, temp));
+        let bottom = top / (2.5 * self.calculate_aridness(num_dandelions, temp));
         (bottom + 0.5) as usize //round it
     }
     fn temperature(&self) -> f32 {
         let x = self.day as f32;
         let x_squared = -0.00137 * x*x;
         let temp = (x_squared + 0.577*x + 13.6)/59.;
+        println!("temp: {}", temp);
         temp
     }
     pub fn seed_normal(&mut self) -> f32 {
         let rand_chance_to_go_far = self.rng.gen_range(0..self.one_in_this_num); // this is the small chance that it goes further than 100 m
         let dist = if rand_chance_to_go_far == 1 {
-            println!("SMALL CHANCE TO GO FAR");
             self.small_chance_normal_dist.sample(&mut self.rng)
         } else {
             self.normal.sample(&mut self.rng)
