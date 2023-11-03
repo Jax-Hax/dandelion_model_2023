@@ -48,7 +48,7 @@ impl Dandelion {
         let dist = land.seed_normal();
         let dir = land.rng.gen_range(0.0..360.0);
         let (x, y) = calculate_triangle_sides(dist, dir as f32);
-        Dandelion::new(x, y)
+        Dandelion::new(self.x + x, self.y + y)
     }
 }
 fn calculate_triangle_sides(hypotenuse: f32, degrees: f32) -> (f32, f32) {
