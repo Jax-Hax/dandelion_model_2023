@@ -22,9 +22,9 @@ pub async fn run() {
     //add models
     //custom mesh
     let mut asset_server = state.world.get_resource_mut::<AssetServer>().unwrap();
-    let dandelion_idx = asset_server.compile_material("cube-diffuse.jpg").await;
-    let background_idx = asset_server.compile_material("cube-normal.png").await;
-    let mut land = Land::new(1.0,1.0,0.01);
+    let dandelion_idx = asset_server.compile_material("dandelion(1).jpg").await;
+    let background_idx = asset_server.compile_material("grass.jpg").await;
+    let mut land = Land::new(1.0,1.0,0.01,1.0);
     let mut dandelions = vec![];
     dandelions.push(Dandelion::new(0.,50.));
     for day in 0..NUM_DAYS {
@@ -40,14 +40,14 @@ pub async fn run() {
         }
     }
     println!("Number of total dandelions: {}", dandelion_total);
-    let p1 = Vec2::new(-0.01, -0.01);
-    let p2 = Vec2::new(0.01, 0.01);
+    let p1 = Vec2::new(-0.004, -0.004);
+    let p2 = Vec2::new(0.004, 0.004);
     let (vertices, indices) = rect(p1, p2);
     let mut instances2: Vec<Instance> = dandelions
         .iter_mut()
         .map(|dandelion| Instance {
             position: Vec3::new(dandelion.x / ZOOM_OUT, (dandelion.y / ZOOM_OUT) * window_events, 0.),
-            //enabled: (dandelion.x > 0. && dandelion.x <= 100. && dandelion.y > 0. && dandelion.y <= 100.),
+            enabled: (dandelion.x > 0. && dandelion.x <= 100. && dandelion.y > 0. && dandelion.y <= 100.),
             ..Default::default()
         })
         .collect();

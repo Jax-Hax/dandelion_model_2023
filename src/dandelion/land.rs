@@ -11,14 +11,16 @@ pub struct Land {
     pub rng: rand::rngs::ThreadRng,
     pub base_aridness: f32,
     pub one_in_this_num: usize,
+    pub temperature: f32,
     pub dandelions_per_meter: [[u32; 200]; 200],
 }
 impl Land {
-    pub fn new(wind_speed: f32, humidity: f32, aridness_constant: f32) -> Self {
+    pub fn new(wind_speed: f32, humidity: f32, aridness_constant: f32, temperature: f32) -> Self {
         Land {
             day: 0,
             wind_speed,
             humidity,
+            temperature,
             normal: Normal::new(5.0, (50. * wind_speed * humidity) / 3.).unwrap(), //mean, standard deviation
             rng: rand::thread_rng(),
             base_aridness: aridness_constant,
@@ -57,7 +59,7 @@ impl Land {
         let x_squared = -0.00137 * x*x;
         let temp = (x_squared + 0.577*x + 13.6)/59.;
         println!("temp: {}", temp);
-        temp
+        temp*self.temperature
     }
     pub fn seed_normal(&mut self) -> f32 {
         let rand_chance_to_go_far = self.rng.gen_range(0..self.one_in_this_num); // this is the small chance that it goes further than 100 m
