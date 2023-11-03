@@ -2,8 +2,9 @@ use glam::{Vec2, Vec3};
 use tile_based_game::{assets::AssetServer, prelude::*, primitives::rect};
 
 use crate::dandelion::{dandelion::Dandelion, land::Land};
-const NUM_DAYS: u32 = 96;
-const ZOOM_OUT: f32 = 20.;
+const NUM_DAYS: u32 = 365;
+const ZOOM_OUT: f32 = 10.;
+const DANDELIONS_PER_METER: u32 = 200;
 mod dandelion {
     pub mod dandelion;
     pub mod land;
@@ -21,13 +22,13 @@ pub async fn run() {
     //custom mesh
     let mut asset_server = state.world.get_resource_mut::<AssetServer>().unwrap();
     let dandelion_idx = asset_server.compile_material("cube-diffuse.jpg").await;
-    let mut land = Land::new(0.0,0.0,0.0,0.3);
+    let mut land = Land::new(1.0,1.0,0.0001);
     let mut dandelions = vec![];
     dandelions.push(Dandelion::new(50., 0.));
     for day in 0..NUM_DAYS {
         println!("Day {}", day);
-        let mut new_dandelions = land.tick(&mut dandelions);
-        dandelions.append(&mut new_dandelions);
+        let new_dandelions = land.tick(&mut dandelions);
+        add_dandelions(new_dandelions, &mut dandelions, &mut land);
         println!("Dandelions: {}", dandelions.len());
     }
     let mut dandelion_total = 0;
@@ -69,4 +70,17 @@ pub async fn run() {
         false,
     );
     run_event_loop(state, event_loop);
+}
+fn add_dandelions(mut dandelions_to_add: Vec<Dandelion>, dandelion_list: &mut Vec<Dandelion>, land: &mut Land) {
+    for dandelion in dandelions_to_add {
+        if dandelion.x > -100. && dandelion.x < 100. && dandelion.y > -100. && dandelion.y < 100. {
+            let x = (dandelion.x + 100.).round() as usize;
+            let y = (dandelion.y + 100.).round() as usize;
+            println!("x: {}, y: {}", x, y);
+            if land.dandelions_per_meter[x][y] < DANDELIONS_PER_METER {
+                land.dandelions_per_meter[x][y] += 1;
+                dandelion_list.push(dandelion);
+            }
+        }
+    }
 }

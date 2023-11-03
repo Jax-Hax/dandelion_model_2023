@@ -24,7 +24,6 @@ impl Dandelion {
         }
     }
     pub fn tick(&mut self, land: &mut Land, am_to_spawn: usize) -> Vec<Dandelion> {
-        self.generate_normal_dist();
         let mut dandelions = vec![];
         if self.is_bloomed {
             for _ in 0..am_to_spawn {
@@ -45,12 +44,9 @@ impl Dandelion {
         }
         dandelions
     }
-    fn generate_normal_dist(&mut self) {
-        //this is where you generate the normal function each day based off the wind and stuff
-    }
     fn spread_seed(&mut self, land: &mut Land) -> Dandelion {
         let dist = land.seed_normal();
-        let dir = land.rng.gen_range(0..360);
+        let dir = land.rng.gen_range(0.0..360.0);
         let (x, y) = calculate_triangle_sides(dist, dir as f32);
         Dandelion::new(x, y)
     }
