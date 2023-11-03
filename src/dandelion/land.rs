@@ -19,10 +19,10 @@ impl Land {
             day: 0,
             wind_speed,
             humidity,
-            normal: Normal::new(2.0, 10. / 3.).unwrap(), //mean, standard deviation
+            normal: Normal::new(5.0, (50. * wind_speed * humidity) / 3.).unwrap(), //mean, standard deviation
             rng: rand::thread_rng(),
             base_aridness: aridness_constant,
-            small_chance_normal_dist: Normal::new(75.0, 10.).unwrap(), //mean, standard deviation
+            small_chance_normal_dist: Normal::new(75.0, (50. * wind_speed * humidity) / 3.).unwrap(), //mean, standard deviation
             one_in_this_num: 100, //0.05% chance
             dandelions_per_meter: [[0; 200]; 200]
         }
@@ -31,7 +31,6 @@ impl Land {
         let mut new_dandelions = vec![];
         let am_to_spawn = self.calclulate_am_to_spawn_value(land.len());
         println!("Am to spawn: {}", am_to_spawn);
-        self.calculate_normal_dist();
         for dandelion in land {
             let mut dandelions = dandelion.tick(self, am_to_spawn);
             new_dandelions.append(&mut dandelions);
@@ -46,9 +45,6 @@ impl Land {
             return 1.
         }
         aridness
-    }
-    fn calculate_normal_dist(&mut self) {
-        self.normal = Normal::new(5.0, (50. * self.wind_speed * self.humidity) / 3.).unwrap()
     }
     fn calclulate_am_to_spawn_value(&self, num_dandelions: usize) -> usize {
         let temp = self.temperature();
