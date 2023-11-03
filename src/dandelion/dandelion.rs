@@ -23,11 +23,11 @@ impl Dandelion {
             am_times_bloomed: 0,
         }
     }
-    pub fn tick(&mut self, land: &mut Land, aridness: f64) -> Vec<Dandelion> {
+    pub fn tick(&mut self, land: &mut Land, am_to_spawn: usize) -> Vec<Dandelion> {
         self.generate_normal_dist();
         let mut dandelions = vec![];
         if self.is_bloomed {
-            for _ in 0..((9.*aridness)+0.5) as usize {
+            for _ in 0..am_to_spawn {
                 //because it spreads 9 per day
                 let dandelion = self.spread_seed(land);
                 dandelions.push(dandelion);

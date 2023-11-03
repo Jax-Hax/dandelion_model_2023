@@ -44,6 +44,7 @@ pub async fn run() {
         .iter_mut()
         .map(|dandelion| Instance {
             position: Vec3::new(dandelion.x / ZOOM_OUT, dandelion.y / ZOOM_OUT, 0.),
+            enabled: (dandelion.x > 0. && dandelion.x <= 100. && dandelion.y > 0. && dandelion.y <= 100.),
             ..Default::default()
         })
         .collect();

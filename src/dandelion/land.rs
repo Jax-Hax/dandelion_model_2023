@@ -29,13 +29,16 @@ impl Land {
     }
     pub fn tick(&mut self, land: &mut Vec<Dandelion>) -> Vec<Dandelion> {
         let mut new_dandelions = vec![];
-        let aridness = self.base_aridness * land.len() as f64;
+        let am_to_spawn = self.calclulate_am_to_spawn_value(land.len());
         for dandelion in land {
-            let mut dandelions = dandelion.tick(self, aridness);
+            let mut dandelions = dandelion.tick(self, self.calclulate_am_to_spawn_value(am_to_spawn));
             new_dandelions.append(&mut dandelions);
         }
         self.day += 1;
         new_dandelions
+    }
+    fn calclulate_am_to_spawn_value(&self, num_dandelions: usize) -> usize {
+        (((self.base_aridness + num_dandelions as f64) / self.humidity as f64) + 0.5) as usize
     }
     pub fn seed_normal(&mut self) -> f32 {
         let rand_chance_to_go_far = self.rng.gen_range(0..self.one_in_this_num); // this is the small chance that it goes further than 100 m
