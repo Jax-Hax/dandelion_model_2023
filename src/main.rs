@@ -3,7 +3,7 @@ use tile_based_game::{assets::AssetServer, prelude::*, primitives::rect};
 
 use crate::dandelion::{dandelion::Dandelion, land::Land};
 const NUM_DAYS: u32 = 365;
-const ZOOM_OUT: f32 = 80.;
+const ZOOM_OUT: f32 = 120.;
 const DANDELIONS_PER_METER: u32 = 9;
 mod dandelion {
     pub mod dandelion;
@@ -23,6 +23,7 @@ pub async fn run() {
     //custom mesh
     let mut asset_server = state.world.get_resource_mut::<AssetServer>().unwrap();
     let dandelion_idx = asset_server.compile_material("cube-diffuse.jpg").await;
+    let background_idx = asset_server.compile_material("cube-normal.png").await;
     let mut land = Land::new(1.0,1.0,0.01);
     let mut dandelions = vec![];
     dandelions.push(Dandelion::new(0.,50.));
@@ -67,7 +68,7 @@ pub async fn run() {
         vertices,
         indices,
         vec![&mut Instance {position: Vec3::new(0.,0.,0.), ..Default::default()}],
-        dandelion_idx,
+        background_idx,
         false,
     );
     run_event_loop(state, event_loop);

@@ -22,8 +22,8 @@ impl Land {
             normal: Normal::new(2.0, 10. / 3.).unwrap(), //mean, standard deviation
             rng: rand::thread_rng(),
             base_aridness: aridness_constant,
-            small_chance_normal_dist: Normal::new(75.0, 150. / 3.).unwrap(), //mean, standard deviation
-            one_in_this_num: 200, //0.05% chance
+            small_chance_normal_dist: Normal::new(75.0, 10.).unwrap(), //mean, standard deviation
+            one_in_this_num: 100, //0.05% chance
             dandelions_per_meter: [[0; 200]; 200]
         }
     }
